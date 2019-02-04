@@ -3,21 +3,21 @@ import MFRC522
 import signal
 import sys
 
-# a library for converting data to hex
-import struct
 
-class BaseReader(object):
+# All card objects inherint from this base class
+class BaseCard(object):
 
     def __init__(self):
-
         self.MFReader = MFRC522.MFRC522()
         self.key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-        signal.signal(signal.SIGINT, self.end_read)
+        signal.signal(signal.SIGINT, self.cleanup)
         self.authenticated = False
+        self.card = None
+        
 
     # A method to clean-up GPIO
     # once reading is finished
-    def end_read(self):
+    def cleanup(self):
         "Ending reading..."
         "Cleaning GPIO"
         self.MFReader.MFRC522_StopCrypto1()
@@ -25,10 +25,11 @@ class BaseReader(object):
 
     # A method for scanning a card
     def scan_card(self):
-        print("Scanning for a card...")
+        # print("Scanning for a card...")
         (status, TagType) = self.MFReader.MFRC522_Request(self.MFReader.PICC_REQIDL)
         if status == self.MFReader.MI_OK:
             print("Card detected")
+            self.card = 1
             return True
         return None
 
@@ -60,69 +61,14 @@ class BaseReader(object):
                 self.authenticated = True
                 return
         return "Error! Already authenticated"
-    '''
-    def authenticate(self, func):
-        print("Authenticating...")
-        def auth_or_raise(*args, **kwargs):
-            self.MFReader.MFRC522_SelectTag(self.uid)
-        status = self.MFReader.MFRC522_Auth(self.MFReader.PICC_AUTHENTI1A, 8, self.key, self.uid)
-            if not status == self.MFReader.MI_OK:
-                print("Errors occured")
-                raise Exception("Authentication error")
-            print("Authenticated")
-            return func(*args, **kwargs)
-        # IF no errors occur, 
-        # Proceed with function
-        return auth_or_raise
-    '''
-    # A method to get a sector block
-    # Takes in a number ranging 1 to 20
 
-    def read_sector(self, sector):
-        if not self.authenticated:
-            self.authenticate()
-        try:
-            block = self.MFReader.MFRC522_Read(sector)
-            return {
-                "sector" : sector,
-                "block" : block
-                }
-        except:
-            return None
-
-
-    def write_sector(self, sector, amount):
-        if not self.authenticated:
-            self.authenticate()
-        try:
-            d = self.data_to_hexBits(amount)
-            print("Writing data {} to sector {}".format(d, sector))
-            self.MFReader.MFRC522_Write(sector, d)
-            block = self.read_sector(sector)['block']
-            return {"block": block}
-        except:
-            return None
-
-    def clear_sector(self, sector):
-        if not self.authenticated:
-            self.authenticate()
-        try:
-            data = []
-            for i in range(0, 16):
-                data.append(0x00)
-            print("Clearing data for sector {}".format(sector))
-            self.MFReader.MFRC522_Write(sector, data)
-            block = self.read_sector(sector)['block']
-            return {"block": block}
-        except:
-            return None
 
     # Sorry for the name
     # This function is called to get the desired data to write in the sector
     # Returns a list 
     def data_to_hexBits(self, amount):
         try:
-            if self.check_for_negative(amount):
+            if self.check_for_negative(amount) and self.check_for_range(amount):
                 new_data = self.data_to_list(amount)
                 return new_data
         except:
@@ -133,6 +79,16 @@ class BaseReader(object):
         if not amount > 0:
             raise Exception("Amount should not be in negative value")
         return True
+
+
+    # Checks if the input does not exceed 4080
+    def check_for_range(self, amount):
+        if amount > 4080:
+            details = "Amount is beyond limit"
+            raise Exception(details)
+            return False
+        return True
+
 
     # Convert the given amount to a list of numbers...
     # Example: 257 will be converted to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,2]
@@ -157,17 +113,66 @@ class BaseReader(object):
           1      1      1    1      1    1      1    1      1    1      1    1      1    1      1    1 = 2^16 = 65536      
         [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,]
 '''
-    
+
+class CardWriter(BaseCard):
+    def __init__(self):
+        super(CardWriter, self).__init__()
+
+    # A method that writes data to a sector
+    def write_sector(self, amount, sector=8):
+        if not self.authenticated:
+            self.authenticate()
+        try:
+            d = self.data_to_hexBits(amount)
+            print("Writing data {} to sector {}".format(d, sector))
+            self.MFReader.MFRC522_Write(sector, d)
+            block = self.read_sector(sector)['block']
+            return {"block": block}
+        except:
+            return None
+
+class CardReader(BaseCard):
+    def __init__(self):
+        super(CardReader, self).__init__()
+
+    # A method to get a sector block
+    # Takes in a number ranging 1 to 20
+
+    def read_sector(self, sector=8):
+        if not self.authenticated:
+            self.authenticate()
+        try:
+            block = self.MFReader.MFRC522_Read(sector)
+            return {
+                "sector" : sector,
+                "block" : block
+                }
+        except:
+            return None
+
+class CardWiper(BaseCard):
+    def __init__(self):
+        super(CardWiper, self).__init__()
+
+
+    # A method for wiping sector 8 clean
+    def clear_sector(self, sector=8):
+        if not self.authenticated:
+            self.authenticate()
+        try:
+            data = []
+            for i in range(0, 16):
+                data.append(0x00)
+            print("Clearing data for sector {}".format(sector))
+            self.MFReader.MFRC522_Write(sector, data)
+            block = self.read_sector(sector)['block']
+            return {"block": block}
+        except:
+            return None
+
 
 if __name__ == '__main__':
-    reader = BaseReader()
-    signal.signal(signal.SIGINT, reader.end_read)
-    while not reader.scan_card():
-        reader.scan_card()
-    uid = reader.get_uid()
-    print(uid)
-    block = reader.write_sector(sector=8, amount=257)
-    print(block)
+    pass
     '''
     data = reader.write_sector(sector=8, data=257)
     print(data)
