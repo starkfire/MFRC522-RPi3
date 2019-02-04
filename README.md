@@ -19,3 +19,7 @@ A simple script that utilizes a raspberry pi and a MFRC522 module to emulate the
 | GND  | Any   | Any Ground |
 | RST  | 22    | GPIO25     |
 | 3.3V | 1     | 3V3        |
+
+## Usage
+1. Install SPI-Py from [here](https://github.com/lthiery/SPI-Py)
+2. Run ``` python app.py ```
