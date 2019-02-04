@@ -124,7 +124,7 @@ class CardWriter(BaseCard):
             self.authenticate()
         try:
             d = self.data_to_hexBits(amount)
-            print("Writing data {} to sector {}".format(d, sector))
+            # print("Writing data {} to sector {}".format(d, sector))
             self.MFReader.MFRC522_Write(sector, d)
             block = self.read_sector(sector)['block']
             return {"block": block}
@@ -163,7 +163,7 @@ class CardWiper(BaseCard):
             data = []
             for i in range(0, 16):
                 data.append(0x00)
-            print("Clearing data for sector {}".format(sector))
+            # print("Clearing data for sector {}".format(sector))
             self.MFReader.MFRC522_Write(sector, data)
             block = self.read_sector(sector)['block']
             return {"block": block}
