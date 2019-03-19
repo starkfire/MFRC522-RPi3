@@ -71,12 +71,13 @@ class BaseCard(object):
             if self.check_for_negative(amount) and self.check_for_range(amount):
                 new_data = self.data_to_list(amount)
                 return new_data
-        except:
+        except Exception as e:
+            print(e)
             print("Error in parsing data")
 
     # This method is called to sanitize input against negative values
     def check_for_negative(self, amount):
-        if not amount > 0:
+        if not amount >= 0:
             raise Exception("Amount should not be in negative value")
         return True
 
@@ -93,8 +94,11 @@ class BaseCard(object):
     # Convert the given amount to a list of numbers...
     # Example: 257 will be converted to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,2]
     def data_to_list(self, amount):
+        print("Data to list amount - %s" % amount)
         extra = amount % 255
+        print("Extra from amount - %s" % extra)
         counts = amount / 255
+        print("Counts from amount - %s" % counts)
         new_data = []
         for i in range(counts):
             new_data.append(255)

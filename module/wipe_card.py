@@ -19,7 +19,7 @@ def handle_choice(card, choice='y'):
 	return {"detail": "Error in wiping card"}
 
 def main():
-	card = base.BaseCard()
+	card = base.CardWiper()
 	print("Wiping card clean...")
 	choice = str(raw_input("Confirm? [y/N]"))
 	detail = handle_choice(card, choice=choice)

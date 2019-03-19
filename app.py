@@ -1,5 +1,6 @@
-from cards import CardBalanceReader, CardBalanceAdder, CardBalanceReducer
+from cards import CardBalanceReader, CardBalanceAdder, CardBalanceReducer, CardBalanceWiper
 from module.base import BaseCard
+from module.wipe_card import main # since I don't have much time, I had to rush this... sorry 
 import sys
 
 
@@ -16,17 +17,18 @@ def handle_choice(choice):
 	elif choice == 3:
 		card = CardBalanceReducer()
 		return card.reduce_balance()
-	else:
-		return None
-
+	elif choice == 4:
+		print("Thank you! Good bye!")
+        sys.exit()
+        return
 
 def main():
 	welcome_message()
-	print("Action: \n1. Read current balance of card\n2. Deposit to card\n3. Pay using card")
+	print("Action: \n(1) Read current balance of card\n(2) Deposit to card\n(3) Pay using card\n(4) Exit")
 	input_ = None
-	while input_ is None or input_ not in [1,2,3]:
+	while input_ is None or input_ not in [1,2,3, 4, 5]:
 		try:
-			choice = int(raw_input("Choice [1, 2, or 3] "))
+			choice = int(raw_input("Choose [1, 2, 3, or 4] "))
 			input_ = choice
 		except ValueError:
 			print("Please input a number, not a character or text")

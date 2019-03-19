@@ -1,4 +1,4 @@
-from module.base import CardReader, CardWriter, CardWiper, BaseCard
+from module.base import CardReader, CardWriter, CardWiper, BaseCard, CardWiper
 
 class CardBalanceReader(CardReader):
 	def __init__(self):
@@ -18,6 +18,7 @@ class CardBalanceReader(CardReader):
 		block = self.read_sector()
 		block = block.get('block')
 		for i in reversed(block):
+			print(i)
 			if i == 0:
 				break
 			else:
@@ -49,6 +50,7 @@ class CardBalanceAdder(CardWriter, CardBalanceReader):
 		block = self.read_sector()
 		block = block.get('block')
 		for i in reversed(block):
+			print(i)
 			if i == 0:
 				break
 			else:
@@ -81,3 +83,8 @@ class CardBalanceReducer(CardWriter, CardBalanceReader):
 		self.write_sector(amount=new_balance)
 		print("New Balance: {}".format(new_balance))
 		return new_balance
+
+
+class CardBalanceWiper(CardWiper, CardBalanceReader):
+	def __init__(self):
+		super(CardBalanceWiper, self).__init__()
