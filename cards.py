@@ -18,7 +18,6 @@ class CardBalanceReader(CardReader):
 		block = self.read_sector()
 		block = block.get('block')
 		for i in reversed(block):
-			print(i)
 			if i == 0:
 				break
 			else:
@@ -50,7 +49,6 @@ class CardBalanceAdder(CardWriter, CardBalanceReader):
 		block = self.read_sector()
 		block = block.get('block')
 		for i in reversed(block):
-			print(i)
 			if i == 0:
 				break
 			else:
@@ -79,6 +77,9 @@ class CardBalanceReducer(CardWriter, CardBalanceReader):
 		while fee is None or fee == 0:
 			fee = self.get_custom_fee()
 		current_balance = self.get_current_balance()
+		if current_balance < fee:
+			print("Ooops! Insufficient balance!")
+			return
 		new_balance = current_balance - fee
 		self.write_sector(amount=new_balance)
 		print("New Balance: {}".format(new_balance))

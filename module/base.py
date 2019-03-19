@@ -39,7 +39,6 @@ class BaseCard(object):
     def get_uid(self):
         (status, uid) = self.MFReader.MFRC522_Anticoll()
         if status == self.MFReader.MI_OK:
-            print("Grabbed UID of card")
             self.uid = uid
             return {"uid": uid}
         return None
@@ -52,12 +51,12 @@ class BaseCard(object):
     # TODO: Change this method to a decorator
 
     def authenticate(self):
-        print("Authenticating")
+        # print("Authenticating")
         if not self.authenticated:
             self.MFReader.MFRC522_SelectTag(self.uid)
             status = self.MFReader.MFRC522_Auth(self.MFReader.PICC_AUTHENT1A, 8, self.key, self.uid)
             if status == self.MFReader.MI_OK:
-                print("Authenticated")
+                # print("Authenticated")
                 self.authenticated = True
                 return
         return "Error! Already authenticated"
@@ -94,11 +93,8 @@ class BaseCard(object):
     # Convert the given amount to a list of numbers...
     # Example: 257 will be converted to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,2]
     def data_to_list(self, amount):
-        print("Data to list amount - %s" % amount)
         extra = amount % 255
-        print("Extra from amount - %s" % extra)
         counts = amount / 255
-        print("Counts from amount - %s" % counts)
         new_data = []
         for i in range(counts):
             new_data.append(255)
