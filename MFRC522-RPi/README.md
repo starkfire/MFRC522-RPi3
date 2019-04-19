@@ -1,6 +1,6 @@
 Jeep-Beeper
 ===========
-A simple script that utilizes a raspberry pi and a MFRC522 module to emulate the beep payment system of LRT / MRT to jeepneys.
+A simple script that utilizes the Raspberry Pi and a MFRC522 module to emulate the beep payment system of LRT / MRT for jeepneys.
 
 
 ## Requirements
