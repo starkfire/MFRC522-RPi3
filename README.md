@@ -23,3 +23,12 @@ A simple script that utilizes the Raspberry Pi and a MFRC522 module to emulate t
 ## Usage
 1. Install SPI-Py from [here](https://github.com/lthiery/SPI-Py)
 2. Run ``` python app.py ```
+
+## Experimental Variants
+Two variants will be implemented with this project. These variants will implement distance-dependent fare rate using GPS data from an Android phone. Vincenty's Formulae will be used for approximating the P2P distance.
+
+1. GPSL+ Variant
+* a variant that will use the GPSLogger app for dynamic fare charges by retrieving location data using an Android phone
+
+2. FCPClient Variant
+* similar to GPSL+. However, unlike GPSL+, this variant will use the [Fused Location Provider API](https://developers.google.com/location-context/fused-location-provider/) for fetching location data and implement a TCP socket for retrieving data
