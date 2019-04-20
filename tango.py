@@ -1,3 +1,6 @@
+# Tap-and-Go (Tango) Script
+# automates the fare payment procedure
+
 from cards import CardBalanceReducer
 from module.base import BaseCard, CardWriter
 import base
