@@ -29,6 +29,19 @@ def haversine(pair1, pair2):
 	haversine_distance = 2*R*math.atan2(math.sqrt(a), math.sqrt(1-a))
 	return haversine_distance
 
+def last_known_location(log):
+	tail_data = []
+	with open(log, 'r') as loc:
+		reader = csv.reader(loc, delimiter=',')
+		for row in reader:
+			if row:
+				columns = [row[0], row[1]]
+				tail_data.append(columns)
+	last_row = tail_data[-1]
+	lk_lat = last_row[0]
+	lk_lon = last_row[1]
+	return (lk_lat, lk_lon)
+
 # needs further evaluation and a lot of refactoring
 # i don't have device access now, so i might not be able to maintain this
 # btw, had lots of issues
@@ -48,6 +61,8 @@ def main():
 		# get UID
 		UID = card.get_uid().get('uid')
 		tail_uid = str(UID[0]) + str(UID[1]) + str(UID[2]) + str(UID[3]) + str(UID[4])
+		# get last known location from location.csv
+		init_lat, init_lon = last_known_location(location_log)
 			
 if __name__ == '__main__':
 	try:
