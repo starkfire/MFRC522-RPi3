@@ -25,7 +25,7 @@ This variant uses an Android phone for geolocation and currently uses the GPSLog
 
 ## Usage
 1. Install SPI-Py from [here](https://github.com/lthiery/SPI-Py)
-2. Run ``` python app.py ```
+2. Run ``` python app.py ``` or ``` python tango.py ``` (tap-and-go)
 
 ## Experimental Variants
 Two variants will be implemented with this project. These variants will implement distance-dependent fare rate using GPS data from an Android phone. Vincenty's Formulae will be used for approximating the P2P distance.
