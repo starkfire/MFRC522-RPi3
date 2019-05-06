@@ -107,6 +107,7 @@ class CardBalanceReducer(CardWriter, CardBalanceReader):
 		new_balance = current_balance - fee
 		self.write_sector(amount=new_balance)
 		print("New Balance: {}".format(new_balance))
+		time.sleep(3)
 		return new_balance
 
 
