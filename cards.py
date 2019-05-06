@@ -98,8 +98,8 @@ class CardBalanceReducer(CardWriter, CardBalanceReader):
 
 	# Reduce current amount
 	def reduce_balance(self, fee=None):
-		while fee is None or fee == 0:
-			fee = self.get_custom_fee()
+		#while fee is None or fee == 0:
+		#	fee = self.get_custom_fee()
 		current_balance = self.get_current_balance()
 		if current_balance < fee:
 			print("Ooops! Insufficient balance!")
