@@ -10,6 +10,15 @@ def parse_inbound():
     data_list = list(get_data)
     return data_list
 
+def get_income():
+    total_income = 0
+    with open('logs/income.csv', 'r') as inc:
+        inc_read = csv.reader(inc, delimiter=',')
+        next(inc_read)  # ignore header
+        for row in inc_read:
+            total_income += int(row[0])
+    return total_income
+
 @app.route('/')
 def index():
     object_list = parse_inbound()
