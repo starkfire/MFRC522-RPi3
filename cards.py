@@ -1,4 +1,8 @@
 from module.base import CardReader, CardWriter, CardWiper, BaseCard, CardWiper
+import RPi.GPIO as GPIO
+import MFRC522
+import signal
+import sys
 
 class CardBalanceReader(CardReader):
 	def __init__(self):
@@ -62,17 +66,37 @@ class CardBalanceReducer(CardWriter, CardBalanceReader):
 	def __init__(self):
 		super(CardBalanceReducer, self).__init__()
 
-	def get_custom_fee(self):
-		while True:
-			try:
-				fee = int(raw_input("Input your desired fee ..."))
-				break
-			except ValueError:
-				raise Except("Fee must be in whole number")
-		return fee or None
+	def check_card_present(obj):
+		if obj.card is None:
+			return False
+		return True
 
+	def scan_card(self):
+        # print("Scanning for a card...")
+        (status, TagType) = self.MFReader.MFRC522_Request(self.MFReader.PICC_REQIDL)
+        if status == self.MFReader.MI_OK:
+            print("Card detected")
+            self.card = 1
+            return True
+        return None
 
-	# Reduce current amount 
+	def get_uid(self):
+        (status, uid) = self.MFReader.MFRC522_Anticoll()
+        if status == self.MFReader.MI_OK:
+            self.uid = uid
+            return {"uid": uid}
+        return None
+
+	#def get_custom_fee(self):
+	#	while True:
+	#		try:
+	#			fee = int(raw_input("Input your desired fee ..."))
+	#			break
+	#		except ValueError:
+	#			raise Except("Fee must be in whole number")
+	#	return fee or None
+
+	# Reduce current amount
 	def reduce_balance(self, fee=None):
 		while fee is None or fee == 0:
 			fee = self.get_custom_fee()
