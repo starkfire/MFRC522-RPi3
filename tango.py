@@ -50,6 +50,7 @@ def main():
 	gpsl_log = 'logs/GPSLogger/gpslogger.csv'
 	location_log = 'logs/location.csv'
 	inbound_log = 'logs/inbound.csv'
+	sum_income = 0
 	while True:
 		outbound = None
 		# snippet
@@ -62,8 +63,38 @@ def main():
 		UID = card.get_uid().get('uid')
 		tail_uid = str(UID[0]) + str(UID[1]) + str(UID[2]) + str(UID[3]) + str(UID[4])
 		# get last known location from location.csv
-		init_lat, init_lon = last_known_location(location_log)
-			
+		init_lat, init_lon = last_known_location(gpsl_log)
+		# determine if inbound or outbound
+		uid_tmp = []
+		with open(inbound_log, 'r') as ds:
+			reader = csv.reader(ds, delimiter=',')
+			for row in reader:
+				if row:
+					uid_append = str(row[2])
+					uid_tmp.append(uid_append)
+		print(uid_tmp)
+		if tail_uid in uid_tmp:
+			outbound = True
+		if(outbound == True):
+			print("NOTIFICATION: Outbound Passenger Detected")
+			with open(inbound_log, 'r') as inb:
+				inb_read = csv.reader(inb, delimiter=',')
+				next(inb_read)	# ignore header
+				# check if UID exists
+				for row in inb_read:
+					for x in uid_tmp:
+						if row[2] == x:
+							# calculate distance in km using haversine()
+							final_lat, final_lon = init_lat, init_lon
+							i_lat, i_lon = row[0], row[1]
+							pair1 = float(i_lat), float(i_lon)
+							pair2 = float(final_lat), float(final_lon)
+							print("Pair 1: " + str(pair1[0]) + "," + str(pair1[1]))
+							print("Pair 2: " + str(pair2[0]) + "," + str(pair2[1]))
+							result = haversine(pair1, pair2)
+							print("Distance: " + str(result))
+							rounded = int(round(result))/1000
+
 if __name__ == '__main__':
 	try:
 		main()
