@@ -103,6 +103,12 @@ def main():
 					newfare = rounded + 9
 					fee_charged = newfare
 					card.reduce_balance(fee=newfare)
+				# record transaction
+				earned = [fee_charged]
+				with open('logs/income.csv', 'a') as inc:
+					record = csv.writer(inc)
+					record.writerow(earned)
+				inc.close()
 
 if __name__ == '__main__':
 	try:
