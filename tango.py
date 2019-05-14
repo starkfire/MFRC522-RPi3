@@ -109,6 +109,15 @@ def main():
 					record = csv.writer(inc)
 					record.writerow(earned)
 				inc.close()
+		# record UID of inbound passenger
+		else:
+			newline = [init_lat, init_lon, tail_uid]
+			with open(inbound_log, 'a') as inbound:
+				log_in = csv.writer(inbound)
+				log_in.writerow(newline)
+			inbound.close()
+			print("NOTIFICATION: Inbound Passenger Detected")
+		time.sleep(1)
 
 if __name__ == '__main__':
 	try:
