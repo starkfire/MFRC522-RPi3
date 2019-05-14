@@ -94,6 +94,15 @@ def main():
 							result = haversine(pair1, pair2)
 							print("Distance: " + str(result))
 							rounded = int(round(result))/1000
+				if(result <= 4000):
+					# charge standard minimum fare if travel distance is <= 4km
+					fee_charged = 9
+					card.reduce_balance(fee=9)
+				elif(result > 4000):
+					# charge variable fare
+					newfare = rounded + 9
+					fee_charged = newfare
+					card.reduce_balance(fee=newfare)
 
 if __name__ == '__main__':
 	try:
