@@ -28,6 +28,7 @@ class CardBalanceReader(CardReader):
 				amount += i
 		print("Current Balance: {}".format(amount))
 		return amount
+		time.sleep(1)		# added a time interrupt as a solution on the rapid card scanning issue
 
 
 class CardBalanceAdder(CardWriter, CardBalanceReader):
